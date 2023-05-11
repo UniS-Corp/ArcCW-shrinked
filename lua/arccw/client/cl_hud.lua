@@ -8,10 +8,10 @@ local hide = {
 CreateClientConVar("arccw_hud_togglestats", "0")
 
 ArcCW.HUDElementConVars = {
-    ["CHudHealth"] = CreateClientConVar("arccw_hud_showhealth", "1"),
-    ["CHudBattery"] = GetConVar("arccw_hud_showhealth"),
-    ["CHudAmmo"] = CreateClientConVar("arccw_hud_showammo", "1"),
-    ["CHudSecondaryAmmo"] = GetConVar("arccw_hud_showammo"),
+    -- ["CHudHealth"] = CreateClientConVar("arccw_hud_showhealth", "1"),
+    -- ["CHudBattery"] = GetConVar("arccw_hud_showhealth"),
+    -- ["CHudAmmo"] = CreateClientConVar("arccw_hud_showammo", "1"),
+    -- ["CHudSecondaryAmmo"] = GetConVar("arccw_hud_showammo"),
 }
 
 local grad = Material("arccw/hud/grad.png", "mips smooth")

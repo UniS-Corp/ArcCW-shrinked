@@ -323,7 +323,7 @@ function SWEP:CreateCustomizeHUD()
             span:Remove()
         end
 
-        if --[[self:GetState() != ArcCW.STATE_CUSTOMIZE or]] self:GetReloading() then
+        if --[[self:GetState() ~= ArcCW.STATE_CUSTOMIZE or]] self:GetReloading() then
             span:Remove()
         end
     end
@@ -334,7 +334,7 @@ function SWEP:CreateCustomizeHUD()
             close = true
         end
 
-        if LocalPlayer():GetActiveWeapon() != ArcCW.InvHUD.ActiveWeapon then
+        if LocalPlayer():GetActiveWeapon() ~= ArcCW.InvHUD.ActiveWeapon then
             close = true
         end
 
@@ -584,7 +584,7 @@ function SWEP:CreateCustomizeHUD()
 
         if attslider:GetDragging() and activeslot then
             local delta = attslider:GetSlideX()
-            if lastslidepos != delta and lastsoundtime <= CurTime() then
+            if lastslidepos ~= delta and lastsoundtime <= CurTime() then
 
                 EmitSound("weapons/arccw/dragatt.wav", EyePos(), -2, CHAN_ITEM, 1,75, 0, math.Clamp(delta * 200, 90, 110))
 
@@ -1035,7 +1035,7 @@ function SWEP:CreateCustomizeHUD()
                             self:DetachAllMergeSlots(span.AttIndex, true)
                             self:Attach(aslot, spaa.AttName)
                         end
-                    elseif kc2 == MOUSE_RIGHT and spaa.AttName != "" then
+                    elseif kc2 == MOUSE_RIGHT and spaa.AttName ~= "" then
                         if span.AttSlot.Installed == spaa.AttName then
                             -- Unequip
                             self:DetachAllMergeSlots(span.AttIndex)
@@ -1128,7 +1128,7 @@ function SWEP:CreateCustomizeHUD()
                             end
                         end
 
-                        if amt >= max and self.Attachments[i].Installed != spaa.AttName then
+                        if amt >= max and self.Attachments[i].Installed ~= spaa.AttName then
                             if spaa:IsHovered() then
                                 Bbg_col = Color(125, 25, 25, 150)
                                 Bfg_col = Color(150, 50, 50, 255)
@@ -1610,7 +1610,7 @@ function SWEP:CreateCustomizeHUD()
             surface.DrawLine(0, gy + starty, gx + startx, gy + starty)
             -- before mid
             surface.DrawLine(gx + startx, gy + starty, gx + endx, gy + endy)
-            if mingr != 0 then
+            if mingr ~= 0 then
                 surface.DrawLine(gx + startx, gy+ScreenScaleMulti(2) + starty, gx + startx, gy-ScreenScaleMulti(2) + starty)
             end
             -- long and into the void
@@ -1638,7 +1638,7 @@ function SWEP:CreateCustomizeHUD()
             surface.DrawText("0m")
 
             -- before mid range
-            if mingr != 0 then
+            if mingr ~= 0 then
                 surface.SetTextColor(fg_col)
                 surface.SetFont("ArcCW_6")
                 local btw = surface.GetTextSize(tostring(mingr) .. "m")
@@ -1751,8 +1751,8 @@ function SWEP:CreateCustomizeHUD()
             {translate("stat.damage"), translate("stat.damage.tooltip"),
                 function()
                     local curNum = self:GetBuff("Num")
-                    local orig = math.Round(self.Damage * GetConVar("arccw_mult_damage"):GetFloat()) .. (self.Num != 1 and ("×" .. self.Num) or "")
-                    local cur = math.Round(self:GetDamage(0) / curNum * GetConVar("arccw_mult_damage"):GetFloat()) .. (curNum != 1 and ("×" .. curNum) or "")
+                    local orig = math.Round(self.Damage * GetConVar("arccw_mult_damage"):GetFloat()) .. (self.Num ~= 1 and ("×" .. self.Num) or "")
+                    local cur = math.Round(self:GetDamage(0) / curNum * GetConVar("arccw_mult_damage"):GetFloat()) .. (curNum ~= 1 and ("×" .. curNum) or "")
                     return orig, cur
                 end,
                 function()
@@ -1764,8 +1764,8 @@ function SWEP:CreateCustomizeHUD()
             {translate("stat.damagemin"), translate("stat.damagemin.tooltip"),
                 function()
                     local curNum = self:GetBuff("Num")
-                    local orig = math.Round(self.DamageMin * GetConVar("arccw_mult_damage"):GetFloat()) .. (self.Num != 1 and ("×" .. self.Num) or "")
-                    local cur = math.Round(self:GetDamage(self.Range) / curNum * GetConVar("arccw_mult_damage"):GetFloat()) .. (curNum != 1 and ("×" .. curNum) or "")
+                    local orig = math.Round(self.DamageMin * GetConVar("arccw_mult_damage"):GetFloat()) .. (self.Num ~= 1 and ("×" .. self.Num) or "")
+                    local cur = math.Round(self:GetDamage(self.Range) / curNum * GetConVar("arccw_mult_damage"):GetFloat()) .. (curNum ~= 1 and ("×" .. curNum) or "")
                     return orig, cur
                 end,
                 function()

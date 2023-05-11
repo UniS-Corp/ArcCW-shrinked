@@ -359,7 +359,7 @@ function SWEP:DrawHUD()
 
     if !GetConVar("cl_drawhud"):GetBool() then return false end
 
-    if self:GetState() != ArcCW.STATE_CUSTOMIZE then
+    if self:GetState() ~= ArcCW.STATE_CUSTOMIZE then
         self:GetBuff_Hook("Hook_DrawHUD")
     end
 
@@ -399,8 +399,8 @@ function SWEP:DrawHUD()
             ammo2 = data.ammo2,
             clip2 = data.clip2,
             plus2 = data.plus2 or "0", -- data.plus is nil when it doesnt exist
-            ammotype = data.ammotype,
-            firemode = data.mode,
+            -- ammotype = data.ammotype,
+            -- firemode = data.mode,
             heat = data.heat_level,
             self:GetInUBGL(),
             self:GetInBipod(),
@@ -414,7 +414,7 @@ function SWEP:DrawHUD()
             curInfo.heat = nil
         end
         for i, v in pairs(curInfo) do
-            if v != lastinfo[i] then
+            if v ~= lastinfo[i] then
                 lastinfotime = visible and (curTime - 0.5) or curTime
                 lastinfo = curInfo
                 break
@@ -430,7 +430,7 @@ function SWEP:DrawHUD()
         end
 
         -- TODO: There's an issue where this won't ping the HUD when switching in from non-ArcCW weapons
-        if LocalPlayer():KeyDown(IN_RELOAD) or lastwpn != self then lastinfotime = visible and (curTime - 0.5) or curTime end
+        if LocalPlayer():KeyDown(IN_RELOAD) or lastwpn ~= self then lastinfotime = visible and (curTime - 0.5) or curTime end
 
         local alpha
         if lastinfotime + decaytime < curTime then

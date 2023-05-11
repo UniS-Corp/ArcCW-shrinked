@@ -287,7 +287,6 @@ ArcCW.Inv_ShownAtt = nil
 ArcCW.Inv_Hidden = false
 
 function SWEP:CreateCustomize2HUD()
-
     local cvar_reloadincust = GetConVar("arccw_reloadincust")
     local cvar_cust_sounds = GetConVar("arccw_cust_sounds")
     local cvar_darkunowned = GetConVar("arccw_attinv_darkunowned")
@@ -379,7 +378,7 @@ function SWEP:CreateCustomize2HUD()
             --print("nooo")
         else
             ArcCW.Inv_Fade = math.Approach(ArcCW.Inv_Fade, 0, FrameTime() * 1 / st)
-            --if (!game.SinglePlayer() and IsFirstTimePredicted() or true) and (self:GetState() != ArcCW.STATE_CUSTOMIZE or !ArcCW.Inv_Hidden) and ArcCW.Inv_Fade == 0 then ArcCW.InvHUD:Remove() end
+            --if (!game.SinglePlayer() and IsFirstTimePredicted() or true) and (self:GetState() ~= ArcCW.STATE_CUSTOMIZE or !ArcCW.Inv_Hidden) and ArcCW.Inv_Fade == 0 then ArcCW.InvHUD:Remove() end
             --print(CurTime())
                 -- This'll completely screw up on multiplayer games and sometimes even singleplayer
         end
@@ -411,7 +410,7 @@ function SWEP:CreateCustomize2HUD()
             close = true
         end
 
-        if LocalPlayer():GetActiveWeapon() != ArcCW.InvHUD.ActiveWeapon then
+        if LocalPlayer():GetActiveWeapon() ~= ArcCW.InvHUD.ActiveWeapon then
             close = true
         end
 
@@ -962,7 +961,7 @@ function SWEP:CreateCustomize2HUD()
             -- if !ArcCW.AttachmentTable[att] then continue end
 
             if !show then continue end
-            has = (att.att != "")
+            has = (att.att ~= "")
 
             local button = vgui.Create("DButton", ArcCW.InvHUD_Menu2)
             button.att = att.att
@@ -1028,12 +1027,12 @@ function SWEP:CreateCustomize2HUD()
                 if blocked then
                     col = col_block
                     col2 = col_block_txt
-                elseif !owned and installed != self2.att then
+                elseif !owned and installed ~= self2.att then
                     col = col_unowned
                     col2 = col_unowned_txt
                 end
 
-                if !owned and installed != self2.att then
+                if !owned and installed ~= self2.att then
                     showqty = false
                 end
 
@@ -1128,6 +1127,26 @@ function SWEP:CreateCustomize2HUD()
             if i == "BaseClass" then continue end
             if slot.Hidden or slot.Blacklisted then continue end
             if slot.Integral then continue end
+
+            local forbidden_tabs = {
+                "Backup Optic",
+                "Tactical",
+                "Grip",
+                "Stock",
+                "Fire Group",
+                "Ammo Type",
+                "Perk",
+                "Charm"
+            }
+
+            local cont = false
+            for _, name in pairs(forbidden_tabs) do
+              if slot.PrintName == name then 
+                cont = true
+                break
+              end
+            end
+            if cont then continue end
 
             local button = vgui.Create("DButton", ArcCW.InvHUD_Menu1)
             button.attindex = i
@@ -1392,7 +1411,7 @@ function SWEP:CreateCustomize2HUD()
 
                     delta = math.Clamp(delta, 0, 1)
 
-                    if self.Attachments[slot].SlidePos != delta and self2.NextDrag <= CurTime() then
+                    if self.Attachments[slot].SlidePos ~= delta and self2.NextDrag <= CurTime() then
                         -- local amt = math.abs(self.Attachments[slot].SlidePos - delta)
                         EmitSound("weapons/arccw/dragatt.wav", EyePos(), -2, CHAN_ITEM, 1,75, 0, math.Clamp(90+(delta * 20), 90, 110))
                         self2.NextDrag = CurTime() + 0.05
@@ -1504,29 +1523,9 @@ function SWEP:CreateCustomize2HUD()
         scroll:SetSize(menu3_w - airgap_x, ss * 128 - bottombuffer)
 
         local multiline = {}
-        local desc = translate("desc." .. atttbl.ShortName) or translate(atttbl.Description) or atttbl.Description
-
+        local desc = "" -- translate("desc." .. atttbl.ShortName) or translate(atttbl.Description) or atttbl.Description
         multiline = multlinetext(desc, scroll:GetWide() - (ss * 2), "ArcCW_10")
-
-        local desc_title = vgui.Create("DPanel", scroll)
-        desc_title:SetSize(scroll:GetWide(), rss * 8)
-        desc_title:SetPos(0, 0)
-        desc_title.Paint = function(self2, w, h)
-            surface.SetFont("ArcCWC2_8")
-            local txt = translate("trivia.description")
-            local tw_1 = surface.GetTextSize(txt)
-
-            surface.SetFont("ArcCWC2_8_Glow")
-            surface.SetTextColor(col_shadow)
-            surface.SetTextPos(w - tw_1, 0)
-            surface.DrawText(txt)
-
-            surface.SetFont("ArcCWC2_8")
-            surface.SetTextColor(col_fg)
-            surface.SetTextPos(w - tw_1, 0)
-            surface.DrawText(txt)
-        end
-
+        
         for i, text in pairs(multiline) do
             local desc_line = vgui.Create("DPanel", scroll)
             desc_line:SetSize(scroll:GetWide(), rss * 10)
@@ -1657,64 +1656,64 @@ function SWEP:CreateCustomize2HUD()
 
     function ArcCW.InvHUD_FormStatsTriviaBar()
         if !IsValid(ArcCW.InvHUD) or !IsValid(self) then return end
-        local statsbutton = vgui.Create("DButton", ArcCW.InvHUD_Menu3)
-        statsbutton:SetSize(ss * 48, ss * 16)
-        statsbutton:SetPos(menu3_w - (ss * 48 * 2) - airgap_x - (ss * 4), rss * 48 + ss * 12)
-        statsbutton:SetText("")
-        statsbutton.Text = translate("ui.stats")
-        statsbutton.Val = 1
-        statsbutton.DoClick = function(self2, clr, btn)
-            ArcCW.InvHUD_FormWeaponStats()
-            ArcCW.Inv_SelectedInfo = 1
-        end
-        statsbutton.Paint = function(self2, w, h)
-            local col = col_button
-            local col2 = col_fg
+        -- local statsbutton = vgui.Create("DButton", ArcCW.InvHUD_Menu3)
+        -- statsbutton:SetSize(ss * 48, ss * 16)
+        -- statsbutton:SetPos(menu3_w - (ss * 48 * 2) - airgap_x - (ss * 4), rss * 48 + ss * 12)
+        -- statsbutton:SetText("")
+        -- statsbutton.Text = translate("ui.stats")
+        -- statsbutton.Val = 1
+        -- statsbutton.DoClick = function(self2, clr, btn)
+        --     ArcCW.InvHUD_FormWeaponStats()
+        --     ArcCW.Inv_SelectedInfo = 1
+        -- end
+        -- statsbutton.Paint = function(self2, w, h)
+        --     local col = col_button
+        --     local col2 = col_fg
+        --
+        --     if self2:IsHovered() or ArcCW.Inv_SelectedInfo == self2.Val then
+        --         col = col_fg_tr
+        --         col2 = col_shadow
+        --     end
+        --
+        --     draw.RoundedBox(cornerrad, 0, 0, w, h, col)
+        --
+        --     surface.SetFont("ArcCWC2_8")
+        --     local tw, th = surface.GetTextSize(self2.Text)
+        --
+        --     surface.SetFont("ArcCWC2_8_Glow")
+        --     surface.SetTextColor(col_shadow)
+        --     surface.SetTextPos((w - tw) / 2, (h - th) / 2)
+        --     surface.DrawText(self2.Text)
+        --
+        --     surface.SetFont("ArcCWC2_8")
+        --     surface.SetTextColor(col2)
+        --     surface.SetTextPos((w - tw) / 2, (h - th) / 2)
+        --     surface.DrawText(self2.Text)
+        -- end
 
-            if self2:IsHovered() or ArcCW.Inv_SelectedInfo == self2.Val then
-                col = col_fg_tr
-                col2 = col_shadow
-            end
+        -- local triviabutton = vgui.Create("DButton", ArcCW.InvHUD_Menu3)
+        -- triviabutton:SetSize(ss * 48, ss * 16)
+        -- triviabutton:SetPos(menu3_w - ss * 48 - airgap_x, rss * 48 + ss * 12)
+        -- triviabutton:SetText("")
+        -- triviabutton.Text = translate("ui.trivia")
+        -- triviabutton.Val = 2
+        -- triviabutton.DoClick = function(self2, clr, btn)
+        --     ArcCW.InvHUD_FormWeaponTrivia()
+        --     ArcCW.Inv_SelectedInfo = 2
+        -- end
+        -- triviabutton.Paint = statsbutton.Paint
 
-            draw.RoundedBox(cornerrad, 0, 0, w, h, col)
-
-            surface.SetFont("ArcCWC2_8")
-            local tw, th = surface.GetTextSize(self2.Text)
-
-            surface.SetFont("ArcCWC2_8_Glow")
-            surface.SetTextColor(col_shadow)
-            surface.SetTextPos((w - tw) / 2, (h - th) / 2)
-            surface.DrawText(self2.Text)
-
-            surface.SetFont("ArcCWC2_8")
-            surface.SetTextColor(col2)
-            surface.SetTextPos((w - tw) / 2, (h - th) / 2)
-            surface.DrawText(self2.Text)
-        end
-
-        local triviabutton = vgui.Create("DButton", ArcCW.InvHUD_Menu3)
-        triviabutton:SetSize(ss * 48, ss * 16)
-        triviabutton:SetPos(menu3_w - ss * 48 - airgap_x, rss * 48 + ss * 12)
-        triviabutton:SetText("")
-        triviabutton.Text = translate("ui.trivia")
-        triviabutton.Val = 2
-        triviabutton.DoClick = function(self2, clr, btn)
-            ArcCW.InvHUD_FormWeaponTrivia()
-            ArcCW.Inv_SelectedInfo = 2
-        end
-        triviabutton.Paint = statsbutton.Paint
-
-        local ballisticsbutton = vgui.Create("DButton", ArcCW.InvHUD_Menu3)
-        ballisticsbutton:SetSize(ss * 48, ss * 16)
-        ballisticsbutton:SetPos(menu3_w - (ss * 48 * 3) - airgap_x - (ss * 4 * 2), rss * 48 + ss * 12)
-        ballisticsbutton:SetText("")
-        ballisticsbutton.Text = translate("ui.ballistics")
-        ballisticsbutton.Val = 3
-        ballisticsbutton.DoClick = function(self2, clr, btn)
-            ArcCW.InvHUD_FormWeaponBallistics()
-            ArcCW.Inv_SelectedInfo = 3
-        end
-        ballisticsbutton.Paint = statsbutton.Paint
+        -- local ballisticsbutton = vgui.Create("DButton", ArcCW.InvHUD_Menu3)
+        -- ballisticsbutton:SetSize(ss * 48, ss * 16)
+        -- ballisticsbutton:SetPos(menu3_w - (ss * 48 * 3) - airgap_x - (ss * 4 * 2), rss * 48 + ss * 12)
+        -- ballisticsbutton:SetText("")
+        -- ballisticsbutton.Text = translate("ui.ballistics")
+        -- ballisticsbutton.Val = 3
+        -- ballisticsbutton.DoClick = function(self2, clr, btn)
+        --     ArcCW.InvHUD_FormWeaponBallistics()
+        --     ArcCW.Inv_SelectedInfo = 3
+        -- end
+        -- ballisticsbutton.Paint = statsbutton.Paint
     end
 
     function ArcCW.InvHUD_FormWeaponName()
@@ -1770,6 +1769,8 @@ function SWEP:CreateCustomize2HUD()
     end
 
     function ArcCW.InvHUD_FormWeaponTrivia()
+        if true then return end
+
         if !IsValid(ArcCW.InvHUD) or !IsValid(self) then return end
         ArcCW.InvHUD_Menu3:Clear()
         ArcCW.InvHUD_FormWeaponName()
@@ -1940,6 +1941,8 @@ function SWEP:CreateCustomize2HUD()
     end
 
     function ArcCW.InvHUD_FormWeaponStats()
+        if true then return end
+
         if !IsValid(ArcCW.InvHUD) or !IsValid(self) then return end
         ArcCW.InvHUD_Menu3:Clear()
         ArcCW.InvHUD_FormWeaponName()
@@ -2002,7 +2005,7 @@ function SWEP:CreateCustomize2HUD()
 
                 -- ammo type
                 local ammo = string.lower(self:GetBuff_Override("Override_Ammo", self.Primary.Ammo))
-                if (ammo or "") != "" and ammo != "none" then
+                if (ammo or "") ~= "" and ammo ~= "none" then
                     local ammotype = ArcCW.TranslateAmmo(ammo) --language.GetPhrase(self.Primary.Ammo .. "_ammo")
                     if ammotype then
                         table.insert(self.Infos_Stats, {
@@ -2228,9 +2231,9 @@ function SWEP:CreateCustomize2HUD()
                             break
                         end
                         for j = 1, #self.Infos_Breakpoints do
-                            if stk_min_n and self.Infos_Breakpoints[j][2][i] != -1 then
+                            if stk_min_n and self.Infos_Breakpoints[j][2][i] ~= -1 then
                                 stk_min_n = false
-                            elseif stk_min_y and self.Infos_Breakpoints[j][2][i] != math.huge then
+                            elseif stk_min_y and self.Infos_Breakpoints[j][2][i] ~= math.huge then
                                 stk_min_y = false
                             end
                             if !stk_min_y and !stk_min_n then
@@ -2248,9 +2251,9 @@ function SWEP:CreateCustomize2HUD()
                             break
                         end
                         for j = 1, #self.Infos_Breakpoints do
-                            if stk_max_n and self.Infos_Breakpoints[j][2][i] != -1 then
+                            if stk_max_n and self.Infos_Breakpoints[j][2][i] ~= -1 then
                                 stk_max_n = false
-                            elseif stk_max_y and self.Infos_Breakpoints[j][2][i] != math.huge then
+                            elseif stk_max_y and self.Infos_Breakpoints[j][2][i] ~= math.huge then
                                 stk_max_y = false
                             end
                             if !stk_max_y and !stk_max_n then
@@ -2421,12 +2424,12 @@ function SWEP:CreateCustomize2HUD()
             surface.SetDrawColor(col_vline)
 
             -- line for min range
-            if dmgmax != dmgmin and mran > 0 then
+            if dmgmax ~= dmgmin and mran > 0 then
                 surface.DrawLine(x_2, 0, x_2, h)
             end
 
             -- line for max range
-            if dmgmax != dmgmin then
+            if dmgmax ~= dmgmin then
                 surface.DrawLine(x_3, 0, x_3, h)
             end
 
@@ -2461,7 +2464,7 @@ function SWEP:CreateCustomize2HUD()
             surface.SetFont("ArcCWC2_8")
 
             local drawndmg = false
-            if dmgmax != dmgmin then
+            if dmgmax ~= dmgmin then
 
                 if mran == 0 or wmin > ss * 24 then
                     local m_1, hu_1 = RangeText(0)
@@ -2472,7 +2475,7 @@ function SWEP:CreateCustomize2HUD()
                     surface.DrawText(hu_1)
                 end
 
-                if sran != hscale and w - wmax > ss * 40 then
+                if sran ~= hscale and w - wmax > ss * 40 then
                     local m_1x, hu_1x = RangeText(hscale)
                     local w_m, _ = surface.GetTextSize(m_1x)
                     local w_hu, _ = surface.GetTextSize(hu_1x)
@@ -2535,7 +2538,7 @@ function SWEP:CreateCustomize2HUD()
                     surface.SetTextPos(w - ss * 2 - twt, ss * 8)
                     surface.DrawText(dmgt)
 
-                elseif sran != mran then
+                elseif sran ~= mran then
                     -- draw max damage centered
                     local dmg = tostring(math.Round(dmgmin))
                     local tw = surface.GetTextSize(dmg)
